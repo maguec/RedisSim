@@ -23,11 +23,11 @@ func fillworker(
 	client.Ping(ctx)
 	defer wg.Done()
 	for {
+		if rps > 0 {
+			rl.Take()
+		}
 		select {
 		case job, ok := <-jobs:
-			if rps > 0 {
-				rl.Take()
-			}
 			if !ok {
 				fmt.Printf("Error with thread %d\n", id)
 			}
