@@ -4,6 +4,8 @@ go 1.21.1
 
 require (
 	github.com/go-redis/redis/v9 v9.0.0-rc.2
+	github.com/jamiealquiza/tachymeter v2.0.0+incompatible
+	github.com/maguec/metermaid v0.0.0-20221205163729-b17bc36f6238
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
 )
@@ -16,6 +18,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/montanaflynn/stats v0.6.6 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
