@@ -16,8 +16,11 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/go-redis/redis/v9"
+	"github.com/maguec/RedisSim/util"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -25,6 +28,8 @@ import (
 var server, password string
 var port, clients, rps int
 var verbose bool
+
+var cluster *redis.ClusterClient
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -56,6 +61,13 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&clients, "clients", 10, "Number of clients to use")
 	rootCmd.PersistentFlags().IntVar(&rps, "rps", 1000, "Rate limit for number of requests per second")
 	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "Verbose output")
+
+	cluster = util.RedisConf(server, password, clients, port)
+	var ctx = context.Background()
+
+	if verbose {
+		fmt.Println("FML")
+		cluster.Ping(ctx)
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
