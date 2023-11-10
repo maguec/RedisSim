@@ -54,7 +54,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&port, "port", 6379, "Redis Port to connect to")
 	rootCmd.PersistentFlags().StringVar(&password, "password", "", "Redis password to connect with")
 	rootCmd.PersistentFlags().IntVar(&clients, "clients", 10, "Number of clients to use")
-	rootCmd.PersistentFlags().IntVar(&rps, "rps", 1000, "Rate limit for number of requests per second")
+	rootCmd.PersistentFlags().IntVar(&rps, "rps", 0, "Rate limit for number of requests per second (0 is disabled)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 
 }

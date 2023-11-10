@@ -28,7 +28,7 @@ var stringfillCmd = &cobra.Command{
 		if err != nil {
 			log.Panic("Unable to connect to cluster: ", err.Error())
 		}
-		err = utils.Stringfill(conf, size, totalSize, clients, statsHide)
+		err = utils.Stringfill(conf, size, totalSize, clients, rps, statsHide)
 		if err != nil {
 			log.Panic("Unable to connect to cluster: ", err.Error())
 		}
