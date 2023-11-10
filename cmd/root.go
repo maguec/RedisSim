@@ -16,11 +16,8 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"os"
 
-	"github.com/go-redis/redis/v9"
-	"github.com/maguec/RedisSim/util"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -28,8 +25,6 @@ import (
 var server, password string
 var port, clients, rps int
 var verbose bool
-
-var cluster *redis.ClusterClient
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -40,7 +35,7 @@ var rootCmd = &cobra.Command{
 See the various sub commands for options`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	//Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -60,18 +55,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&password, "password", "", "Redis password to connect with")
 	rootCmd.PersistentFlags().IntVar(&clients, "clients", 10, "Number of clients to use")
 	rootCmd.PersistentFlags().IntVar(&rps, "rps", 1000, "Rate limit for number of requests per second")
-	rootCmd.PersistentFlags().BoolVar(&verbose, "verbose", false, "Verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 
-	cluster = util.RedisConf(server, password, clients, port)
-	var ctx = context.Background()
-
-	if verbose {
-		fmt.Println("FML")
-		cluster.Ping(ctx)
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.

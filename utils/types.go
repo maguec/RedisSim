@@ -1,13 +1,17 @@
 package utils
 
 import (
+	"context"
+	"fmt"
+	"time"
+
 	"github.com/go-redis/redis/v9"
 )
 
-func RedisConf(server, password string, clients, port int) redis.ClusterClient {
+func RedisConf(server, password string, clients, port int) *redis.ClusterClient {
 	var discovery_ports = []string{}
+	var ctx = context.Background()
 	discovery_ports = append(discovery_ports, fmt.Sprintf("%s:%d", server, port))
-	fmt.Printf("%+v\n", discovery_ports)
 	// Setup Redis Connection pool
 	client := redis.NewClusterClient(&redis.ClusterOptions{
 		Addrs:        discovery_ports,
