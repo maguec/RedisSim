@@ -24,11 +24,16 @@ func CSVwrite(conf *redis.ClusterOptions, ctx context.Context, clients, rps int,
 		return err
 	}
 	client := simredis.ClusterClient(conf, ctx)
+	pipe := client.Pipeline()
 	for _, row := range rows {
-		_, e := client.HSet(ctx, row[keyfield].(string), row).Result()
+		_, e := pipe.HSet(ctx, row[keyfield].(string), row).Result()
 		if e != nil {
 			return e
 		}
+	}
+	_, err = pipe.Exec(ctx)
+	if err != nil {
+		return err
 	}
 	return nil
 }
