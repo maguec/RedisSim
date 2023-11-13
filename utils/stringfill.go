@@ -18,6 +18,7 @@ func fillworker(
 	jobs <-chan int,
 	ctx context.Context, size, rps int, rl ratelimit.Limiter,
 	mm *metermaid.Metermaid, tach *tachymeter.Tachymeter,
+	prefix string,
 ) {
 	client := simredis.ClusterClient(conf, ctx)
 	client.Ping(ctx)
@@ -32,7 +33,10 @@ func fillworker(
 				fmt.Printf("Error with thread %d\n", id)
 			}
 			startTime := time.Now()
-			err := client.Set(ctx, fmt.Sprintf("string:%d", job), RandStringBytes(size), 0).Err()
+			err := client.Set(
+				ctx,
+				fmt.Sprintf("%s:%d", prefix, job), RandStringBytes(size), 0,
+			).Err()
 			if err != nil {
 				fmt.Printf("Error with thread %d and job %d\n", id, job)
 			}
@@ -44,7 +48,7 @@ func fillworker(
 	}
 }
 
-func Stringfill(conf *redis.ClusterOptions, size, count, threads, rps int, hide bool) error {
+func Stringfill(conf *redis.ClusterOptions, size, count, threads, rps int, hide bool, prefix string) error {
 	var ctx = context.Background()
 	txns := make(chan int, count)
 	for t := 0; t < count; t++ {
@@ -62,7 +66,7 @@ func Stringfill(conf *redis.ClusterOptions, size, count, threads, rps int, hide 
 	wg := new(sync.WaitGroup)
 	for w := 0; w < threads; w++ {
 		wg.Add(1)
-		go fillworker(w, wg, conf, txns, ctx, size, rps, rl, mm, tach)
+		go fillworker(w, wg, conf, txns, ctx, size, rps, rl, mm, tach, prefix)
 	}
 	wg.Wait()
 	if !hide {
