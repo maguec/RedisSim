@@ -15,7 +15,6 @@ import (
 var ctx = context.Background()
 var size, totalSize int
 var statsHide bool
-var prefix string
 
 // stringfillCmd represents the stringfill command
 var stringfillCmd = &cobra.Command{
