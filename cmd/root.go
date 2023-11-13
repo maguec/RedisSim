@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var server, password, prefix string
+var server, password, prefix, ratio string
 var port, clients, rps int
 var verbose bool
 
