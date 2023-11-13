@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var csvfile, keyfield string
+var csvfile, keyfield, xprefix string
 var batchsize int
 var csvstatsHide bool
 
@@ -28,7 +28,7 @@ User needs to define the CSV field to load in as the key.`,
 		if err != nil {
 			log.Panic("Unable to connect to cluster: ", err.Error())
 		}
-		err = utils.CSVwrite(conf, ctx, clients, rps, csvfile, keyfield, csvstatsHide)
+		err = utils.CSVwrite(conf, ctx, clients, rps, csvfile, keyfield, xprefix, csvstatsHide)
 		if err != nil {
 			log.Panic("Unable to connect to cluster: ", err.Error())
 		}
@@ -39,6 +39,7 @@ func init() {
 	rootCmd.AddCommand(loadcsvCmd)
 	loadcsvCmd.Flags().StringVar(&csvfile, "csv-file", "", "CSV file to load into Redis")
 	loadcsvCmd.Flags().StringVar(&keyfield, "key-field", "", "CSV field to set as the key name")
+	loadcsvCmd.Flags().StringVar(&xprefix, "csv-prefix", "", "prefix the key name")
 	loadcsvCmd.Flags().IntVar(&batchsize, "batch-size", 300, "Size of write batches")
 	loadcsvCmd.Flags().BoolVarP(&csvstatsHide, "stats-hide", "x", false, "Hide statistics")
 }

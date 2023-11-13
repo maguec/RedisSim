@@ -17,8 +17,7 @@ import (
 	"go.uber.org/ratelimit"
 )
 
-// TODO: this needs to be batched, have a prefix and rate limiting etc, but for now works slowly
-func CSVwrite(conf *redis.ClusterOptions, ctx context.Context, clients, rps int, csvfile, keyfield string, hide bool) error {
+func CSVwrite(conf *redis.ClusterOptions, ctx context.Context, clients, rps int, csvfile, keyfield, prefix string, hide bool) error {
 	rows, _, err := csv2map(csvfile, keyfield)
 	if err != nil {
 		return err
@@ -26,7 +25,11 @@ func CSVwrite(conf *redis.ClusterOptions, ctx context.Context, clients, rps int,
 	client := simredis.ClusterClient(conf, ctx)
 	pipe := client.Pipeline()
 	for _, row := range rows {
-		_, e := pipe.HSet(ctx, row[keyfield].(string), row).Result()
+		keyname := row[keyfield].(string)
+		if prefix != "" {
+			keyname = fmt.Sprintf("%s:%s", prefix, row[keyfield].(string))
+		}
+		_, e := pipe.HSet(ctx, keyname, row).Result()
 		if e != nil {
 			return e
 		}
