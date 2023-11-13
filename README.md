@@ -3,7 +3,19 @@
 This is a command line tool to simulate various scenarios running against a Redis compatable cluster.
 The goal is to make it easy to show how a cluster responds under CPU pressure and Memory Pressure 
 
-To see options run
+## Building
+
+```
+git clone https://github.com/maguec/RedisSim.git
+cd RedisSim
+# install go and make
+sudo apt-get install -y golang-1.21 make
+make
+```
+
+## Options 
+
+To see what is available run
 
 ```
 ./RedisSim -h
