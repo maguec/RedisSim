@@ -23,7 +23,8 @@ var stringfillCmd = &cobra.Command{
 	Short: "Add Datatype string to a specific memory size",
 	Long:  `This is used to simulate a datasize being stored on a Redis server`,
 	Run: func(cmd *cobra.Command, args []string) {
-		conf := simredis.RedisConf(server, password, clients, port)
+		// We're going to overwrite the pool size here as we spin a new connection for each go routine
+		conf := simredis.RedisConf(server, password, 1, port)
 		cluster := simredis.ClusterClient(conf, ctx)
 		err := cluster.Ping(ctx).Err()
 		if err != nil {
