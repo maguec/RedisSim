@@ -43,5 +43,5 @@ func init() {
 	stringfillCmd.Flags().IntVar(&size, "size", 32, "size in bytes per record")
 	stringfillCmd.Flags().IntVar(&totalSize, "string-count", 1000, "total size of  records in memory")
 	stringfillCmd.Flags().BoolVarP(&statsHide, "stats-hide", "x", false, "Hide statistics")
-	stringfillCmd.Flags().StringVar(&prefix, prefix, "string", "Prefix all keys with this string:")
+	stringfillCmd.Flags().StringVar(&prefix, "prefix", "string", "Prefix all keys with this string:")
 }
