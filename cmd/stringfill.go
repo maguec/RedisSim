@@ -13,7 +13,7 @@ import (
 )
 
 var ctx = context.Background()
-var size, totalSize int
+var size, totalSize, minTtl, maxTtl int
 var statsHide bool
 
 // stringfillCmd represents the stringfill command
@@ -29,7 +29,7 @@ var stringfillCmd = &cobra.Command{
 		if err != nil {
 			log.Panic("Unable to connect to cluster: ", err.Error())
 		}
-		err = utils.Stringfill(conf, size, totalSize, clients, rps, statsHide, prefix)
+		err = utils.Stringfill(conf, size, totalSize, clients, rps, minTtl, maxTtl, statsHide, prefix)
 		if err != nil {
 			log.Panic("Unable to connect to cluster: ", err.Error())
 		}
@@ -44,4 +44,6 @@ func init() {
 	stringfillCmd.Flags().IntVar(&totalSize, "string-count", 1000, "total size of  records in memory")
 	stringfillCmd.Flags().BoolVarP(&statsHide, "stats-hide", "x", false, "Hide statistics")
 	stringfillCmd.Flags().StringVar(&prefix, "prefix", "string", "Prefix all keys with this string:")
+	stringfillCmd.Flags().IntVar(&minTtl, "min-ttl", 0, "Set the minimum TTL to randomize on")
+	stringfillCmd.Flags().IntVar(&maxTtl, "max-ttl", 0, "Set the maximum TTL to randomize - if 0 then TTLs are not set")
 }

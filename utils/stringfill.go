@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"sync"
 	"time"
 
@@ -16,7 +17,8 @@ import (
 func fillworker(
 	id int, wg *sync.WaitGroup, conf *redis.ClusterOptions,
 	jobs <-chan int,
-	ctx context.Context, size, rps int, rl ratelimit.Limiter,
+	ctx context.Context, size, rps, minttl, maxttl int,
+	rl ratelimit.Limiter,
 	mm *metermaid.Metermaid, tach *tachymeter.Tachymeter,
 	prefix string,
 ) {
@@ -32,10 +34,16 @@ func fillworker(
 			if !ok {
 				fmt.Printf("Error with thread %d\n", id)
 			}
+			ttl := 0
+			if maxttl > minttl {
+				ttl = rand.Intn(maxttl-minttl) + minttl
+			}
 			startTime := time.Now()
 			err := client.Set(
 				ctx,
-				fmt.Sprintf("%s:%d", prefix, job), RandStringBytes(size), 0,
+				fmt.Sprintf("%s:%d", prefix, job),
+				RandStringBytes(size),
+				time.Duration(ttl)*time.Second,
 			).Err()
 			if err != nil {
 				fmt.Printf("Error with thread %d and job %d\n", id, job)
@@ -48,7 +56,12 @@ func fillworker(
 	}
 }
 
-func Stringfill(conf *redis.ClusterOptions, size, count, threads, rps int, hide bool, prefix string) error {
+func Stringfill(
+	conf *redis.ClusterOptions,
+	size, count, threads, rps, minttl, maxttl int,
+	hide bool,
+	prefix string,
+) error {
 	var ctx = context.Background()
 	txns := make(chan int, count)
 	for t := 0; t < count; t++ {
@@ -66,7 +79,7 @@ func Stringfill(conf *redis.ClusterOptions, size, count, threads, rps int, hide 
 	wg := new(sync.WaitGroup)
 	for w := 0; w < threads; w++ {
 		wg.Add(1)
-		go fillworker(w, wg, conf, txns, ctx, size, rps, rl, mm, tach, prefix)
+		go fillworker(w, wg, conf, txns, ctx, size, rps, minttl, maxttl, rl, mm, tach, prefix)
 	}
 	wg.Wait()
 	if !hide {
