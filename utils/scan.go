@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-redis/redis/v9"
 	"github.com/maguec/RedisSim/simredis"
+	"github.com/schollz/progressbar/v3"
 )
 
 func KeyCleanup(conf *redis.ClusterOptions, ctx context.Context, prefix string, dryrun bool) error {
@@ -20,9 +21,11 @@ func KeyCleanup(conf *redis.ClusterOptions, ctx context.Context, prefix string, 
 	if err != nil {
 		return err
 	}
+	bar := progressbar.Default(int64(len(keys)))
 	client := simredis.ClusterClient(conf, ctx)
 	pipe := client.Pipeline()
 	for _, key := range keys {
+		bar.Add(1)
 		if dryrun {
 			fmt.Printf("UNLINK %s\n", key)
 		} else {

@@ -32,6 +32,8 @@ var cleanupCmd = &cobra.Command{
 			if err != nil {
 				log.Panic("Unable to cleanup: ", err.Error())
 			}
+		} else {
+			log.Println("No action is set, please use --rm to delete keys try with --dry-run first")
 		}
 	},
 }
