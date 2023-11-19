@@ -11,6 +11,7 @@ import (
 	"github.com/jamiealquiza/tachymeter"
 	"github.com/maguec/RedisSim/simredis"
 	"github.com/maguec/metermaid"
+	"github.com/schollz/progressbar/v3"
 	"go.uber.org/ratelimit"
 )
 
@@ -20,7 +21,7 @@ func fillworker(
 	ctx context.Context, size, rps, minttl, maxttl int,
 	rl ratelimit.Limiter,
 	mm *metermaid.Metermaid, tach *tachymeter.Tachymeter,
-	prefix string,
+	prefix string, bar *progressbar.ProgressBar,
 ) {
 	client := simredis.ClusterClient(conf, ctx)
 	client.Ping(ctx)
@@ -38,6 +39,7 @@ func fillworker(
 			if maxttl > minttl {
 				ttl = rand.Intn(maxttl-minttl) + minttl
 			}
+			bar.Add(1)
 			startTime := time.Now()
 			err := client.Set(
 				ctx,
@@ -77,9 +79,10 @@ func Stringfill(
 	tach := tachymeter.New(&tachymeter.Config{Size: count})
 	mm := metermaid.New(&metermaid.Config{Size: count})
 	wg := new(sync.WaitGroup)
+	bar := progressbar.Default(int64(count))
 	for w := 0; w < threads; w++ {
 		wg.Add(1)
-		go fillworker(w, wg, conf, txns, ctx, size, rps, minttl, maxttl, rl, mm, tach, prefix)
+		go fillworker(w, wg, conf, txns, ctx, size, rps, minttl, maxttl, rl, mm, tach, prefix, bar)
 	}
 	wg.Wait()
 	if !hide {
