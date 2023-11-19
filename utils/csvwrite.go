@@ -14,6 +14,7 @@ import (
 	"github.com/jamiealquiza/tachymeter"
 	"github.com/maguec/RedisSim/simredis"
 	"github.com/maguec/metermaid"
+	"github.com/schollz/progressbar/v3"
 	"go.uber.org/ratelimit"
 )
 
@@ -22,9 +23,11 @@ func CSVwrite(conf *redis.ClusterOptions, ctx context.Context, clients, rps int,
 	if err != nil {
 		return err
 	}
+	bar := progressbar.Default(int64(len(rows)))
 	client := simredis.ClusterClient(conf, ctx)
 	pipe := client.Pipeline()
 	for _, row := range rows {
+		bar.Add(1)
 		keyname := row[keyfield].(string)
 		if prefix != "" {
 			keyname = fmt.Sprintf("%s:%s", prefix, row[keyfield].(string))
