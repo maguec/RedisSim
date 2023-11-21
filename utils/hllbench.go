@@ -46,6 +46,7 @@ func hllworker(
 			addTach.AddTime(time.Since(startTime))
 			addMm.Add()
 		}
+		bar.Add(1)
 		startTime := time.Now()
 		err := client.PFCount(
 			ctx,
@@ -78,7 +79,7 @@ func HllBench(
 	addMm := metermaid.New(&metermaid.Config{Size: hllCount * hllEntryCount * hllRuns})
 	countMm := metermaid.New(&metermaid.Config{Size: hllCount * hllRuns})
 	wg := new(sync.WaitGroup)
-	bar := progressbar.Default(int64(hllCount*hllEntryCount + hllRuns))
+	bar := progressbar.Default(int64(hllCount*hllEntryCount*hllRuns + hllRuns*hllCount))
 	for w := 0; w < hllCount; w++ {
 		wg.Add(1)
 		go hllworker(

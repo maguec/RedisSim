@@ -84,7 +84,17 @@ $ redis-cli -c -p 30001 hgetall athletes:Tim
 8) "Giants"
 ```
 
+## HyperLogLog Benchmark
 
+Add entries to a [HYPERLOGLOG](https://redis.io/docs/data-types/probabilistic/hyperloglogs/) and count them.
 
+This will return the latencies and rates for both the [PFADD](https://redis.io/commands/pfadd/) and [PFCOUNT](https://redis.io/commands/pfcount/) commands.
 
+Hyperloglog will return the approximated cardinality of a set of values and is often used to get real time statistics in a very performant and efficient manner.
 
+Create 1000 separate Hyperloglog keys, add 1000000 entries to each key and then count 100 times
+
+```
+./RedisSim 	--port 30001  --hll-count 1000   \
+		 --hll-entry-count 10000 --hll-runs 10
+```
