@@ -161,7 +161,7 @@ func Exercise(conf *redis.ClusterOptions, size, count, threads, rps, runs int, h
 		for k, v := range stats {
 			if v.tach.Size > 0 {
 				fmt.Printf("========================== %s ==========================\n", k)
-				ShowStats(v.tach, v.mm)
+				ShowStats(v.tach, v.mm, true)
 			}
 		}
 	}

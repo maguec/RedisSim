@@ -86,7 +86,7 @@ func Stringfill(
 	}
 	wg.Wait()
 	if !hide {
-		ShowStats(tach, mm)
+		ShowStats(tach, mm, true)
 	}
 	return nil
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/maguec/metermaid"
 )
 
-func ShowStats(tach *tachymeter.Tachymeter, mm *metermaid.Metermaid) {
+func ShowStats(tach *tachymeter.Tachymeter, mm *metermaid.Metermaid, showHist bool) {
 
 	results := tach.Calc()
 	fmt.Println("------------------ Latency ------------------")
@@ -19,9 +19,11 @@ func ShowStats(tach *tachymeter.Tachymeter, mm *metermaid.Metermaid) {
 		results.Time.P99,
 		results.Time.P999,
 	)
-	fmt.Println("-------------- Latency Histogram ------------")
-	fmt.Println("")
-	fmt.Println(results.Histogram.String(10))
+	if showHist {
+		fmt.Println("-------------- Latency Histogram ------------")
+		fmt.Println("")
+		fmt.Println(results.Histogram.String(10))
+	}
 	rates := mm.Calc()
 	fmt.Println("-------------------- Rate -------------------")
 	fmt.Printf(
