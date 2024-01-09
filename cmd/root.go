@@ -24,7 +24,7 @@ import (
 
 var server, password, prefix, ratio string
 var port, clients, rps int
-var verbose bool
+var verbose, cluster bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -56,6 +56,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&clients, "clients", 10, "Number of clients to use")
 	rootCmd.PersistentFlags().IntVar(&rps, "rps", 0, "Rate limit for number of requests per second (0 is disabled)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&cluster, "cluster", "c", false, "Enable Cluser API")
 
 }
 

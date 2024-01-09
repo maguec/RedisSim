@@ -16,7 +16,7 @@ import (
 )
 
 func fillworker(
-	id int, wg *sync.WaitGroup, conf *redis.ClusterOptions,
+	id int, wg *sync.WaitGroup, conf *redis.UniversalOptions,
 	jobs <-chan int,
 	ctx context.Context, size, rps, minttl, maxttl int,
 	rl ratelimit.Limiter,
@@ -59,7 +59,7 @@ func fillworker(
 }
 
 func Stringfill(
-	conf *redis.ClusterOptions,
+	conf *redis.UniversalOptions,
 	size, count, threads, rps, minttl, maxttl int,
 	hide bool,
 	prefix string,

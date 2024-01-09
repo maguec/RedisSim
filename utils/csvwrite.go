@@ -18,7 +18,7 @@ import (
 	"go.uber.org/ratelimit"
 )
 
-func CSVwrite(conf *redis.ClusterOptions, ctx context.Context, clients, rps int, csvfile, keyfield, prefix string, hide bool) error {
+func CSVwrite(conf *redis.UniversalOptions, ctx context.Context, clients, rps int, csvfile, keyfield, prefix string, hide bool) error {
 	rows, _, err := csv2map(csvfile, keyfield)
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func csv2map(csvfile, keyfield string) ([]map[string]interface{}, []string, erro
 }
 
 func csvworker(
-	id int, wg *sync.WaitGroup, conf *redis.ClusterOptions,
+	id int, wg *sync.WaitGroup, conf *redis.UniversalOptions,
 	jobs <-chan int,
 	ctx context.Context, size, rps int, rl ratelimit.Limiter,
 	mm *metermaid.Metermaid, tach *tachymeter.Tachymeter,

@@ -22,7 +22,7 @@ var hllCmd = &cobra.Command{
 	Long: `Create HyperLoglog data structues in Redis and gather timing information around them
 For more information on HyperLoglog see Redis documentation.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		conf := simredis.RedisConf(server, password, 1, port)
+		conf := simredis.RedisConf(server, password, 1, port, cluster)
 		cluster := simredis.ClusterClient(conf, ctx)
 		err := cluster.Ping(ctx).Err()
 		if err != nil {

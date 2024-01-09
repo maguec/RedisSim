@@ -8,10 +8,23 @@ import (
 	"github.com/go-redis/redis/v9"
 )
 
-func RedisConf(server, password string, clients, port int) *redis.ClusterOptions {
+func RedisConf(server, password string, clients, port int, cluster bool) *redis.UniversalOptions {
+	// Note: the Universal options determines if we use cluster or standalone options
+	// by the lenghty of the Addrs - > 1 = enable cluster mode
+	// so here we go ahead and pull the total number of nodes ahead of time to
+	// ensure the correct setting
 	var discovery_ports = []string{}
-	discovery_ports = append(discovery_ports, fmt.Sprintf("%s:%d", server, port))
-	conf := &redis.ClusterOptions{
+	if cluster {
+		discovery_ports, _ = getMasterNodes(&redis.ClusterOptions{
+			Addrs:    []string{fmt.Sprintf("%s:%d", server, port)},
+			Password: password,
+			PoolSize: 1,
+		})
+
+	} else {
+		discovery_ports = append(discovery_ports, fmt.Sprintf("%s:%d", server, port))
+	}
+	conf := &redis.UniversalOptions{
 		Addrs:        discovery_ports,
 		Password:     password,
 		PoolSize:     clients,
@@ -23,11 +36,11 @@ func RedisConf(server, password string, clients, port int) *redis.ClusterOptions
 	return conf
 }
 
-func ClusterClient(conf *redis.ClusterOptions, ctx context.Context) *redis.ClusterClient {
+func ClusterClient(conf *redis.UniversalOptions, ctx context.Context) redis.UniversalClient {
 	// Setup Redis Connection pool
-	client := redis.NewClusterClient(conf)
+	client := redis.NewUniversalClient(conf)
 	// update all the slots from the discovery port
-	client.ReloadState(ctx)
+	//client.ReloadState(ctx)
 
 	return client
 }

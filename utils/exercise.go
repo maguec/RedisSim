@@ -30,7 +30,7 @@ type exerciseStats struct {
 
 func exercisekey(
 	ctx context.Context,
-	client *redis.ClusterClient,
+	client redis.UniversalClient,
 	job exercisetype,
 ) error {
 	switch job.operation {
@@ -52,7 +52,7 @@ func exercisekey(
 }
 
 func exerciseworker(
-	id int, wg *sync.WaitGroup, conf *redis.ClusterOptions,
+	id int, wg *sync.WaitGroup, conf *redis.UniversalOptions,
 	jobs <-chan exercisetype,
 	ctx context.Context, rps int,
 	rl ratelimit.Limiter,
@@ -96,7 +96,7 @@ func ratio2rw(ratio string) []int {
 	return res
 }
 
-func Exercise(conf *redis.ClusterOptions, size, count, threads, rps, runs int, hide bool, prefix, ratio string) error {
+func Exercise(conf *redis.UniversalOptions, size, count, threads, rps, runs int, hide bool, prefix, ratio string) error {
 	var ctx = context.Background()
 	var ops []exercisetype
 	client := simredis.ClusterClient(conf, ctx)

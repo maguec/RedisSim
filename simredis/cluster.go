@@ -1,15 +1,15 @@
-package utils
+package simredis
 
 import (
 	"context"
 
 	"github.com/go-redis/redis/v9"
-	"github.com/maguec/RedisSim/simredis"
 )
 
-func getMasterNodes(conf *redis.ClusterOptions, ctx context.Context) ([]string, error) {
+func getMasterNodes(conf *redis.ClusterOptions) ([]string, error) {
+	var ctx = context.Background()
 	nodes := []string{}
-	client := simredis.ClusterClient(conf, ctx)
+	client := redis.NewClusterClient(conf)
 	slots, err := client.ClusterSlots(ctx).Result()
 	if err != nil {
 		return nil, err

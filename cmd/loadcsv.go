@@ -22,7 +22,7 @@ var loadcsvCmd = &cobra.Command{
 	Long: `Takes a CSV file and loads it into a Redis hash datas structure.
 User needs to define the CSV field to load in as the key.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		conf := simredis.RedisConf(server, password, clients, port)
+		conf := simredis.RedisConf(server, password, clients, port, cluster)
 		cluster := simredis.ClusterClient(conf, ctx)
 		err := cluster.Ping(ctx).Err()
 		if err != nil {

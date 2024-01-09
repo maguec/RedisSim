@@ -21,7 +21,7 @@ var cleanupCmd = &cobra.Command{
 	Long:  `Allows you to mass set of keys by prefix by either deleting the keys or setting a TTL.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// We're going to overwrite the pool size here as we spin a new connection for each go routine
-		conf := simredis.RedisConf(server, password, 1, port)
+		conf := simredis.RedisConf(server, password, 1, port, cluster)
 		cluster := simredis.ClusterClient(conf, ctx)
 		err := cluster.Ping(ctx).Err()
 		if err != nil {

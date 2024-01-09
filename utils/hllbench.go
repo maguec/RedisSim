@@ -15,7 +15,7 @@ import (
 )
 
 func hllworker(
-	id int, wg *sync.WaitGroup, conf *redis.ClusterOptions,
+	id int, wg *sync.WaitGroup, conf *redis.UniversalOptions,
 	ctx context.Context,
 	entries, runs, rps int,
 	rl ratelimit.Limiter,
@@ -61,7 +61,7 @@ func hllworker(
 }
 
 func HllBench(
-	conf *redis.ClusterOptions,
+	conf *redis.UniversalOptions,
 	hllCount, hllEntryCount, hllRuns, rps int,
 	hide, mergeTest bool,
 	prefix string,

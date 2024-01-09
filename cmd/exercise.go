@@ -23,7 +23,7 @@ var exerciseCmd = &cobra.Command{
 			log.Fatal("Please set a prefix")
 		}
 		// We're going to overwrite the pool size here as we spin a new connection for each go routine
-		conf := simredis.RedisConf(server, password, 1, port)
+		conf := simredis.RedisConf(server, password, 1, port, cluster)
 		cluster := simredis.ClusterClient(conf, ctx)
 		err := cluster.Ping(ctx).Err()
 		if err != nil {

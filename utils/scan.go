@@ -11,13 +11,13 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-func KeyCleanup(conf *redis.ClusterOptions, ctx context.Context, prefix string, dryrun bool) error {
+func KeyCleanup(conf *redis.UniversalOptions, ctx context.Context, prefix string, dryrun bool) error {
 	batch := 1
-	nodes, err := getMasterNodes(conf, ctx)
-	if err != nil {
-		return err
-	}
-	keys, err := scanNodes(nodes, ctx, prefix)
+	//nodes, err := getMasterNodes(conf, ctx)
+	//if err != nil {
+	//	return err
+	//}
+	keys, err := scanNodes(conf.Addrs, ctx, prefix)
 	if err != nil {
 		return err
 	}
