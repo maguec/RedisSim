@@ -6,6 +6,7 @@ require (
 	github.com/go-redis/redis/v9 v9.0.0-rc.2
 	github.com/jamiealquiza/tachymeter v2.0.0+incompatible
 	github.com/maguec/metermaid v0.0.0-20221205163729-b17bc36f6238
+	github.com/schollz/progressbar/v3 v3.14.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
 	go.uber.org/ratelimit v0.3.0
@@ -26,7 +27,6 @@ require (
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
-	github.com/schollz/progressbar/v3 v3.14.1 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
