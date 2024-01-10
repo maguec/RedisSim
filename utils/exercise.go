@@ -15,6 +15,7 @@ import (
 	"github.com/jamiealquiza/tachymeter"
 	"github.com/maguec/RedisSim/simredis"
 	"github.com/maguec/metermaid"
+	"github.com/schollz/progressbar/v3"
 	"go.uber.org/ratelimit"
 )
 
@@ -35,15 +36,14 @@ func exercisekey(
 ) error {
 	switch job.operation {
 	case "read":
-		err := client.Get(ctx, job.keyname).Err()
-		if err != nil {
-			log.Fatal(err)
-		}
+		// Since we randomize the jobs it's possible we are reading for a keys that does not exercisetype
+		// Therere we don't need to catch any errors
+		client.Get(ctx, job.keyname).Err()
 	case "write":
 		//TODO: maybe writing something better would be a good idea here
 		err := client.Set(ctx, job.keyname, "EXERCISERUN", 0).Err()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Couldn't write the key", err)
 		}
 	default:
 		return errors.New(fmt.Sprintf("I don't know what to do with key: %s  operation: %s\n", job.keyname, job.operation))
@@ -57,6 +57,7 @@ func exerciseworker(
 	ctx context.Context, rps int,
 	rl ratelimit.Limiter,
 	stats map[string]exerciseStats,
+	bar *progressbar.ProgressBar,
 ) {
 	client := simredis.ClusterClient(conf, ctx)
 	client.Ping(ctx)
@@ -72,6 +73,7 @@ func exerciseworker(
 			}
 			startTime := time.Now()
 			err := exercisekey(ctx, client, job)
+			bar.Add(1)
 			if err != nil {
 				fmt.Printf(err.Error())
 			}
@@ -126,6 +128,7 @@ func Exercise(conf *redis.UniversalOptions, size, count, threads, rps, runs int,
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(ops), func(i, j int) { ops[i], ops[j] = ops[j], ops[i] })
 
+	bar := progressbar.Default(int64(len(ops)))
 	txns := make(chan exercisetype, len(ops))
 	for t := 0; t < len(ops); t++ {
 		txns <- ops[t]
@@ -154,7 +157,7 @@ func Exercise(conf *redis.UniversalOptions, size, count, threads, rps, runs int,
 	for w := 0; w < threads; w++ {
 		wg.Add(1)
 		//	go exerciseworker(w, wg, conf, txns, ctx, size, rps, rl, mm, tach, prefix)
-		go exerciseworker(w, wg, conf, txns, ctx, rps, rl, stats)
+		go exerciseworker(w, wg, conf, txns, ctx, rps, rl, stats, bar)
 	}
 	wg.Wait()
 	if !hide {
