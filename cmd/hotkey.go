@@ -35,6 +35,6 @@ var hotkeyCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(hotkeyCmd)
-	hotkeyCmd.Flags().IntVar(&hotkeyruns, "hotkey-runs", 100, "number of times to run through the simulate")
-	hotkeyCmd.Flags().IntVar(&hotkeycount, "hotkey-count", 100000, "number of keys to simulate")
+	hotkeyCmd.Flags().IntVar(&hotkeyruns, "runs", 100, "number of times to run through the simulate")
+	hotkeyCmd.Flags().IntVar(&hotkeycount, "count", 100000, "number of keys to simulate")
 }
