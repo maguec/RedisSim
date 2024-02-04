@@ -98,3 +98,11 @@ Create 1000 separate Hyperloglog keys, add 1000000 entries to each key and then 
 ./RedisSim 	--port 30001  --hll-count 1000   \
 		 --hll-entry-count 10000 --hll-runs 10
 ```
+
+## Hotkey Simulation
+
+Since Redis is single threaded, it is possible to have a single hot key that is taking all of the writes.  In a cluster setup, this can mean that even scaling the cluster does not eliminate slow performance.
+
+```
+./RedisSim 	hotkey
+```
