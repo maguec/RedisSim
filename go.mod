@@ -1,6 +1,6 @@
 module github.com/maguec/RedisSim
 
-go 1.21.1
+go 1.21
 
 require (
 	github.com/go-redis/redis/v9 v9.0.0-rc.2
