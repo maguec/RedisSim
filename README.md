@@ -106,3 +106,11 @@ Since Redis is single threaded, it is possible to have a single hot key that is 
 ```
 ./RedisSim 	hotkey
 ```
+
+## CPU Kill
+
+Run the most expensive Redis command of [SUNION](https://redis.io/commands/sunion/) in a loop to really ramp up CPU usage. This will get your command latency in the hundreds of milliseconds quite easily
+
+```
+./RedisSim 	cpukill -c --port 30001 --clients 100
+```
