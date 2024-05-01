@@ -18,13 +18,14 @@ import (
 
 func cpukillworker(
 	id int, wg *sync.WaitGroup, conf *redis.UniversalOptions,
-	jobs <-chan int,
+	jobs chan int,
 	ctx context.Context, rps int,
 	rl ratelimit.Limiter,
 	prefix string,
 	bar *progressbar.ProgressBar,
 	tach *tachymeter.Tachymeter,
 	mm *metermaid.Metermaid,
+	loop bool,
 ) {
 	client := simredis.ClusterClient(conf, ctx)
 	client.Ping(ctx)
@@ -46,9 +47,14 @@ func cpukillworker(
 			if err != nil {
 				fmt.Printf(err.Error())
 			}
-			tach.AddTime(time.Since(startTime))
-			mm.Add()
-			bar.Add(1)
+			// if we loop forever then we put the job back on the channel and don't update stats
+			if loop {
+				jobs <- job
+			} else {
+				mm.Add()
+				bar.Add(1)
+				tach.AddTime(time.Since(startTime))
+			}
 			if err != nil {
 				fmt.Printf(err.Error())
 			}
@@ -58,7 +64,7 @@ func cpukillworker(
 	}
 }
 
-func CPUKill(conf *redis.UniversalOptions, count, threads, rps, runs, keylength int, hide bool, prefix string) error {
+func CPUKill(conf *redis.UniversalOptions, count, threads, rps, runs, keylength int, hide bool, prefix string, loop bool) error {
 	var ctx = context.Background()
 	var ops []int
 	client := simredis.ClusterClient(conf, ctx)
@@ -79,6 +85,9 @@ func CPUKill(conf *redis.UniversalOptions, count, threads, rps, runs, keylength 
 		}
 	}
 	log.Printf("Starting a run with %d keys of length %d", count, keylength)
+	if loop {
+		log.Printf("Looping forever")
+	}
 
 	for r := 0; r < runs; r++ {
 		// we halve then add the same number twice so we get all of the Sets added
@@ -95,8 +104,13 @@ func CPUKill(conf *redis.UniversalOptions, count, threads, rps, runs, keylength 
 	for _, x := range ops {
 		jobs <- x
 	}
+	// zero out the tachymeter and metermaid if we loop forever
 
-	bar := progressbar.Default(int64(len(ops)))
+	statsLength := len(ops)
+	if loop {
+		statsLength = 0
+	}
+	bar := progressbar.NewOptions(statsLength, progressbar.OptionSetDescription("CPU Kill"))
 
 	// rewrite this if the RPS > 0 since creating a ratelimiter with 0 will div by zero
 	rl := ratelimit.New(1)
@@ -105,14 +119,14 @@ func CPUKill(conf *redis.UniversalOptions, count, threads, rps, runs, keylength 
 		rl = ratelimit.New(rps)
 	}
 
-	tach := tachymeter.New(&tachymeter.Config{Size: len(ops)})
-	mm := metermaid.New(&metermaid.Config{Size: len(ops)})
+	tach := tachymeter.New(&tachymeter.Config{Size: statsLength})
+	mm := metermaid.New(&metermaid.Config{Size: statsLength})
 
 	wg := new(sync.WaitGroup)
 
 	for w := 0; w < threads; w++ {
 		wg.Add(1)
-		go cpukillworker(w, wg, conf, jobs, ctx, rps, rl, prefix, bar, tach, mm)
+		go cpukillworker(w, wg, conf, jobs, ctx, rps, rl, prefix, bar, tach, mm, loop)
 	}
 
 	wg.Wait()
